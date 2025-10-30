@@ -15,13 +15,13 @@ build/
 *.egg-info/
 
 # Model artifacts and checkpoints (often large)
-/saved_model_crosscheck/
+# /saved_model_crosscheck/  # Commented out - we want to track this with LFS
 /checkpoints/
 /models/
-*.pt
-*.pth
-*.ckpt
-*.bin
+# *.pt     # Commented out - tracking with LFS
+# *.pth    # Commented out - tracking with LFS
+# *.ckpt   # Commented out - tracking with LFS
+# *.bin    # Commented out - tracking with LFS
 *.tar.gz
 *.zip
 
