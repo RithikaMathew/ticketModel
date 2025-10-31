@@ -47,8 +47,6 @@ from pathlib import Path
 input_file = Path("your_input_file.xlsx")
 ```
 
-I can add a wrapper script like `run_predictions.py --input your_input.xlsx` if you'd prefer not to edit the file.
-
 ## What the script produces
 
 - `<inputname>_preprocessed.xlsx` — preprocessed data with added columns:
