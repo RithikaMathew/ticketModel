@@ -26,8 +26,7 @@ build/
 *.zip
 
 # Generated Excel outputs (preprocessed / prediction results)
-*_preprocessed.xlsx
-*_with_predictions.xlsx
+*.xlsx
 
 # Images (don't add PNG/JPEG outputs)
 *.png

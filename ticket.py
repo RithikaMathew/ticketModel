@@ -6,6 +6,7 @@
 import pandas as pd
 import re
 import numpy as np
+from pathlib import Path
 from openpyxl import Workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
 import nltk
@@ -154,7 +155,131 @@ print(f"📊 Processed {len(df)} rows total")
 # New code cell for applying model to milton.xlsx
 import pandas as pd
 import os
+import pickle
 from pathlib import Path
+import torch
+from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
+import numpy as np
+from sklearn.metrics import accuracy_score, f1_score, hamming_loss
+
+class MultiLabelDistilBERTClassifier:
+    """Multi-label classifier using DistilBERT for crosscheck categories"""
+
+    def __init__(self, model_name='distilbert-base-uncased'):
+        self.model_name = model_name
+        self.tokenizer = None
+        self.model = None
+        self.mlb = None
+        self.categories = None
+        self.optimal_thresholds = None
+
+    def advanced_preprocessing(self, text):
+        """Enhanced preprocessing for utility text"""
+        if pd.isna(text) or text == '':
+            return ''
+
+        text = str(text).lower()
+        text = re.sub(r'[^\w\s\-\.]', ' ', text)
+
+        utility_replacements = {
+            r'\bxfmr\b': 'transformer',
+            r'\btx\b(?!\s*\d)': 'transformer',
+            r'\boh\b': 'overhead',
+            r'\bug\b': 'underground',
+            r'\bpri\b': 'primary',
+            r'\bsec\b': 'secondary',
+            r'\bkv\b': 'kilovolt',
+            r'\bpole\b': 'utility pole',
+            r'\btree\b': 'vegetation',
+            r'\blimb\b': 'vegetation',
+            r'\bflood\b': 'flooding water',
+            r'\bwater\b': 'flooding',
+        }
+
+        for pattern, replacement in utility_replacements.items():
+            text = re.sub(pattern, replacement, text, flags=re.IGNORECASE)
+
+        text = ' '.join(text.split())
+        return text
+
+    def predict(self, text, use_optimal_thresholds=True):
+        """Make predictions on some text"""
+        if self.model is None:
+            return "Model not trained yet"
+
+        cleaned_text = self.advanced_preprocessing(text)
+
+        self.model.eval()
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.model.to(device)
+
+        with torch.no_grad():
+            inputs = self.tokenizer(
+                cleaned_text,
+                truncation=True,
+                padding=True,
+                max_length=256,
+                return_tensors='pt'
+            )
+            inputs = {k: v.to(device) for k, v in inputs.items()}
+            outputs = self.model(**inputs)
+            probs = torch.sigmoid(outputs.logits).cpu().numpy()[0]
+
+        # Apply per-class thresholds
+        predicted_labels = []
+        thresholds_used = {}
+
+        for i, cat in enumerate(self.categories):
+            if use_optimal_thresholds and getattr(self, 'optimal_thresholds', None):
+                threshold = self.optimal_thresholds.get(cat, 0.5)
+            else:
+                threshold = 0.5
+
+            thresholds_used[cat] = threshold
+            if probs[i] > threshold:
+                predicted_labels.append(cat)
+
+        # If no predictions, pick the highest probability or 'other' if sufficiently likely
+        if not predicted_labels:
+            if 'other' in self.categories and probs[self.categories.index('other')] > 0.1:
+                predicted_labels = ['other']
+            else:
+                predicted_labels = [self.categories[int(np.argmax(probs))]]
+
+                # Enforce "other" exclusivity: drop if combined with other labels
+        if 'other' in predicted_labels and len(predicted_labels) > 1:
+            predicted_labels = [lbl for lbl in predicted_labels if lbl != 'other']
+            if not predicted_labels:  # Rare: if only 'other' was left after drop, fallback to max non-other
+                non_other_probs = {cat: probs[i] for i, cat in enumerate(self.categories) if cat != 'other'}
+                if non_other_probs:
+                    predicted_labels = [max(non_other_probs, key=non_other_probs.get)]
+                else:
+                    predicted_labels = ['other']  # Truly no others
+
+        result = {
+            'predicted_categories': predicted_labels,
+            'confidences': {self.categories[i]: float(probs[i]) for i in range(len(probs))},
+            'thresholds_used': thresholds_used
+        }
+
+        return result
+
+    def load_model(self, save_dir="./saved_model_crosscheck"):
+        """Load pre-trained model"""
+        self.model = DistilBertForSequenceClassification.from_pretrained(save_dir)
+        self.tokenizer = DistilBertTokenizer.from_pretrained(save_dir)
+
+        with open(os.path.join(save_dir, 'mlb.pkl'), 'rb') as f:
+            self.mlb = pickle.load(f)
+        with open(os.path.join(save_dir, 'categories.pkl'), 'rb') as f:
+            self.categories = pickle.load(f)
+
+        threshold_path = os.path.join(save_dir, 'thresholds.pkl')
+        if os.path.exists(threshold_path):
+            with open(threshold_path, 'rb') as f:
+                self.optimal_thresholds = pickle.load(f)
+
+        print(f"Model loaded from {save_dir}")
 
 # Ensure classifier is available (use in-memory if present, otherwise load saved model)
 try:
