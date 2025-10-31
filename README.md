@@ -1,223 +1,102 @@
-# Ticket Classification System
+## Ticket Classification — Testing Guide
 
-A machine learning system for automatically classifying utility service tickets using DistilBERT. This system can predict ticket categories like vegetation issues, damaged poles, flooding, and other utility-related problems from ticket comments.
+This README is focused on running the provided, pre-trained ticket classification pipeline to generate predictions from an Excel file. It does NOT include training instructions.
 
-## 🚀 Quick Start
+## Quick Start (for non-ML users)
 
-### Prerequisites
-- Python 3.9 or higher
-- Git (optional, for cloning)
+1. Open a terminal and navigate to the project folder:
 
-### Installation
-
-1. **Clone or download this repository**
-   ```bash
-   git clone https://github.com/RithikaMathew/ticketFPL.git
-   cd ticketFPL-1
-   ```
-
-2. **Install dependencies**
-   ```bash
-   pip3 install -r requirements.txt
-   ```
-
-3. **You're ready to go!** The system comes with a pre-trained model in the `saved_model_crosscheck/` directory.
-
-## 📊 Usage Options
-
-### Option 1: Python Script (Recommended for Production)
 ```bash
-python3 ticket.py
-```
-- **Input**: Expects `Milton.xlsx` in the project directory
-- **Output**: `Milton_preprocessed_with_predictions.xlsx`
-
-### Option 2: Jupyter Notebook (Recommended for Training/Development)
-```bash
-jupyter notebook ticket.ipynb
-```
-- Use this for model training, experimentation, and detailed analysis
-- Contains both training and prediction workflows
-
-## 📁 Input File Requirements
-
-### Excel File Format
-Your input Excel file must contain these columns:
-
-| Column Name | Description | Required |
-|-------------|-------------|----------|
-| `Dispatch Center Comments` | Comments from dispatch center | Yes |
-| `Service Center Comments` | Comments from service center | Yes |
-| `CI` | Customer Impact (number of customers affected) | Yes |
-| `County Name` or `Franchise Name` | Location information | Yes |
-
-### Sample Input Data Format
-```
-Ticket Number | Dispatch Center Comments | Service Center Comments | CI
-TKT001       | Tree down on power line  | Crew dispatched         | 150
-TKT002       | Flooding near substation | Water pumps needed      | 500
-TKT003       | Damaged utility pole     | Pole replacement req    | 75
+cd /Users/xrconnectivity/Desktop/ticketFPL-1
 ```
 
-### Supported File Formats
-- `.xlsx` (Excel format) - Primary supported format
-- `.xls` (Legacy Excel) - Also supported
+2. Install Python dependencies (if not already installed):
 
-## 📤 Output Files
-
-### 1. Preprocessed Data (`Milton_preprocessed.xlsx`)
-Contains the cleaned and processed input data with:
-- `merged_comments`: Combined dispatch and service center comments
-- `clean_comments`: Preprocessed text for ML model
-- `unknown_words`: Detected abbreviations and unknown terms
-
-### 2. Predictions (`Milton_preprocessed_with_predictions.xlsx`)
-Final output with ML predictions:
-- All original columns
-- `predicted_crosscheck`: Predicted categories (e.g., "vegetation", "damaged pole", "flooding")
-- Optional: `prediction_confidences`: Confidence scores for each prediction
-
-### 3. Visualization Files (if using notebook)
-- `multilabel_comprehensive_evaluation.png`: Model performance metrics
-- Various analysis charts showing category distributions and performance
-
-## 🏷️ Prediction Categories
-
-The model can predict these ticket categories:
-
-| Category | Description | Example Keywords |
-|----------|-------------|------------------|
-| **Vegetation** | Tree-related issues | tree, limb, vegetation, pruning |
-| **Damaged Pole** | Utility pole problems | pole damaged, pole down, pole hit |
-| **Flooding** | Water-related issues | flood, water, storm surge |
-| **Other** | General utility issues | equipment failure, maintenance |
-
-### Multi-label Predictions
-- Tickets can have multiple categories (e.g., "vegetation, damaged pole")
-- Categories are comma-separated in the output
-
-## 🔧 Advanced Configuration
-
-### Custom Input Files
-To use a different input file, modify the file path in `ticket.py`:
-```python
-input_file = Path("your_file_name.xlsx")  # Change this line
-```
-
-### Model Retraining
-If you want to train a new model:
-
-1. **Prepare training data** with a `crosscheck` column containing correct labels
-2. **Use the Jupyter notebook** `ticket.ipynb`
-3. **Run the training cells** to create a new model
-4. **The new model** will be saved to `saved_model_crosscheck/`
-
-### Training Data Format
-For training, your Excel file needs an additional column:
-- `crosscheck`: Ground truth labels (e.g., "vegetation", "damaged pole", "flooding")
-
-## 🛠️ Troubleshooting
-
-### Common Issues
-
-**Error: "No module named 'pandas'"**
 ```bash
 pip3 install -r requirements.txt
 ```
 
-**Error: "File 'Milton.xlsx' not found"**
-- Make sure your Excel file is in the project directory
-- Check the filename matches exactly (case-sensitive)
-- Verify the file is not corrupted
+3. Run the prediction script (uses only the saved model):
 
-**Error: "Column 'Dispatch Center Comments' not found"**
-- Check your Excel file has the required column names
-- Column names are case-sensitive and must match exactly
-
-**Memory Issues with Large Files**
-- The system can handle 35,000+ rows efficiently
-- For very large files (100k+ rows), consider processing in batches
-
-### Performance Tips
-
-**For Large Datasets:**
-- Run on a machine with at least 8GB RAM
-- GPU acceleration is supported but not required
-- Processing time: ~1 second per 100 rows
-
-**Model Accuracy:**
-- The system achieves ~85-90% accuracy on utility tickets
-- Performance varies based on comment quality and completeness
-
-## 📈 System Architecture
-
-```
-Input Excel File
-      ↓
-Text Preprocessing (Clean comments, merge fields)
-      ↓
-DistilBERT Model (Pre-trained transformer)
-      ↓
-Multi-label Classification (Predict categories)
-      ↓
-Output Excel File (With predictions)
+```bash
+python3 ticket.py
 ```
 
-## 🤝 Support
+Note:
+- The script loads the trained model from `./saved_model_crosscheck` — no training required and no model downloads during prediction.
 
-### Getting Help
-1. **Check this README** for common solutions
-2. **Review error messages** carefully - they usually indicate the specific issue
-3. **Verify input file format** matches requirements
+## Required input file
 
-### Sample Files
-- `Milton.xlsx`: Example input file format
-- `saved_model_crosscheck/`: Pre-trained model files
-- `requirements.txt`: Required Python packages
+- Default filename: `Milton.xlsx` (place it in the project root) — you may use any Excel file, see "Advanced Configuration" below.
+- The script expects these columns (case-sensitive) for core operation:
+      - `Dispatch Center Comments` (required)
+      - `Service Center Comments` (required)
 
-## 📝 File Structure
+- Optional columns used only for visualizations (when running `graphs.py`):
+      - `CI` (customer impact)
+      - `County Name` or `Franchise Name`
+
+Supported formats: `.xlsx` (primary), `.xls` (legacy Excel)
+
+## Advanced Configuration — Custom input files
+
+If you want to use a different input filename, update the `input_file` in `ticket.py` or create a small wrapper. Example edit in `ticket.py`:
+
+```python
+from pathlib import Path
+input_file = Path("your_input_file.xlsx")
+```
+
+I can add a wrapper script like `run_predictions.py --input your_input.xlsx` if you'd prefer not to edit the file.
+
+## What the script produces
+
+- `<inputname>_preprocessed.xlsx` — preprocessed data with added columns:
+      - `merged_comments` — merged comment text
+      - `clean_comments` — cleaned and normalized text ready for the model
+      - `unknown_words` — comma-separated tokens the script considered unknown or domain-specific
+
+- `<inputname>_with_predictions.xlsx` — final output with predictions:
+      - All original columns
+      - `predicted_crosscheck` — comma-separated predicted categories (e.g., "vegetation, damaged pole")
+
+Files are written to the current working directory; the output filenames are derived from your input filename (stem + suffix).
+
+## Visualizations
+
+- Visualizations are produced by `graphs.py`. If you want charts, run `graphs.py` after generating the predictions file. `graphs.py` uses the optional `CI` and location columns when available.
+
+## Troubleshooting (common issues)
+
+- "No module named 'pandas'" — install dependencies:
+
+```bash
+pip3 install -r requirements.txt
+```
+
+- "File not found" — ensure your input file is in the project root and spelled exactly.
+
+- "Column 'Dispatch Center Comments' not found" — verify the Excel file has the required column names.
+
+- For very large files, processing is slower; using a machine with a GPU and more RAM will speed up prediction.
+
+## Quick checks (after running)
+
+1. Confirm the `<inputname>_with_predictions.xlsx` file exists in the project root.
+2. Open the file and verify `predicted_crosscheck` values for a few rows.
+
+## File layout (relevant files)
 
 ```
 ticketFPL-1/
-├── README.md                          # This file
-├── requirements.txt                   # Python dependencies
-├── ticket.py                         # Main Python script
-├── ticket.ipynb                      # Jupyter notebook (training + prediction)
-├── Milton.xlsx                       # Sample input file
-├── saved_model_crosscheck/           # Pre-trained model directory
-│   ├── config.json
-│   ├── model.safetensors
-│   ├── tokenizer_config.json
-│   ├── categories.pkl
-│   ├── mlb.pkl
-│   └── thresholds.pkl
-└── output files (generated after running)
-    ├── Milton_preprocessed.xlsx
-    └── Milton_preprocessed_with_predictions.xlsx
+├── requirements.txt
+├── ticket.py                     # Run this to preprocess + predict using saved model
+├── graphs.py                     # Generate visualizations from predictions
+├── saved_model_crosscheck/       # Pre-trained model (used by ticket.py)
+└── (outputs generated after running)
 ```
-
-## 🔬 Technical Details
-
-### Model Information
-- **Base Model**: DistilBERT (distilbert-base-uncased)
-- **Task**: Multi-label text classification
-- **Training**: 5-fold cross-validation with early stopping
-- **Optimization**: Per-class threshold optimization for imbalanced data
-
-### Text Preprocessing
-- Lowercasing and punctuation removal
-- Utility-specific abbreviation expansion (e.g., "tx" → "transformer")
-- Unknown word detection using NLTK + custom utility vocabulary
-
-### Performance Metrics
-- **F1-Score (Micro)**: ~0.87
-- **Exact Match Accuracy**: ~0.83
-- **Hamming Loss**: <0.15
 
 ## 📄 License
 
 This project is part of utility infrastructure analysis. Please ensure appropriate data privacy and security measures when processing real utility data.
 
----
-
-**Need more help?** Check the Jupyter notebook (`ticket.ipynb`) for detailed examples and step-by-step explanations of the entire workflow.
