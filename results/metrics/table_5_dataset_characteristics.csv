@@ -1,0 +1,13 @@
+Metric,Value
+Total Dataset Size,5976 samples
+Training Set Size (85%),5079 samples
+Test Set Size (15%),897 samples
+Number of Labels,4
+Avg Text Length (words),32.4
+Max Text Length (words),205
+Min Text Length (words),1
+Avg Tokens (sampled),48.2
+Max Sequence Length Model,256
+Multi-Label Samples,79 (1.6%)
+Single-Label Samples,5000 (98.4%)
+Multi-Label Ratio,1.6%

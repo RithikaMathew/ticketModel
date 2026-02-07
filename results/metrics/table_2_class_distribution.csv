@@ -1,0 +1,5 @@
+Category,Train_Count,Train_%,Test_Count,Test_%,Class_Weight
+damaged pole,122,2.4%,26,2.9%,39.378
+flooding,118,2.3%,24,2.7%,41.085
+other,3193,62.9%,565,63.0%,0.590
+vegetation,1730,34.1%,306,34.1%,1.935

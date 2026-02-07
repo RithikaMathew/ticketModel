@@ -1,0 +1,9 @@
+Metric,Score
+Exact Match Accuracy,0.9532
+F1-Micro,0.9625
+F1-Macro,0.8777
+Jaccard Similarity,0.9623
+Coverage Error,1.0680
+LRAP,0.9825
+MCC (Macro),0.8644
+AUPRC (Macro),0.9100

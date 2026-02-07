@@ -1,0 +1,4 @@
+Component,F1-Micro,Improvement
+Baseline (0.5 threshold),0.9624,Baseline
++ Threshold Optimization,0.9625,+0.0%
+Full Model (All Components),0.9625,All components

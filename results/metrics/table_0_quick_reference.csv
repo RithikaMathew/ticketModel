@@ -1,0 +1,8 @@
+Component,Value
+Best F1-Micro,0.9625
+Best F1-Macro,0.8777
+Best Accuracy,0.9532
+Jaccard Similarity,0.9623
+MCC (Macro),0.8644
+AUPRC (Macro),0.9100
+Threshold Opt Gain,0.0%

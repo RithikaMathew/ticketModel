@@ -1,0 +1,5 @@
+Category,Optimized_Threshold,Default_Threshold
+damaged pole,0.300,0.500
+flooding,0.350,0.500
+other,0.330,0.500
+vegetation,0.460,0.500
