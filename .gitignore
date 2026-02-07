@@ -5,6 +5,7 @@ __pycache__/
 # Virtual environments
 .tkt/
 venv/
+ticket
 
 # macOS
 .DS_Store
@@ -48,3 +49,4 @@ nltk_data/
 .vscode/
 *.sublime-workspace
 *.sublime-project
+.github
