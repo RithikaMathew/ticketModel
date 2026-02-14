@@ -29,12 +29,6 @@ build/
 # Generated Excel outputs (preprocessed / prediction results)
 *.xlsx
 
-# Images (don't add PNG/JPEG outputs)
-*.png
-!multilabel_comprehensive_evaluation.png  # Keep this specific evaluation plot
-*.jpg
-*.jpeg
-*.gif
 
 # NLTK data
 nltk_data/
