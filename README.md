@@ -1,7 +1,7 @@
-# TicketFPL: Domain-Adapted Multi-Label Classification for Power Distribution Event Tickets
+# REAL WORLD DATASET: Domain-Adapted Multi-Label Classification for Power Distribution Event Tickets
 
 ## Overview
-TicketFPL is a research-grade pipeline for classifying power distribution event tickets using domain-adapted DistilBERT and advanced multi-label techniques. The project includes:
+Ticket is a research-grade pipeline for classifying power distribution event tickets using domain-adapted DistilBERT and advanced multi-label techniques. The project includes:
 - Domain adaptation of DistilBERT using power engineering textbooks (PDFs)
 - Custom multi-label classifier with class imbalance mitigation
 - K-Fold cross-validation, threshold optimization, and ensemble baselines
@@ -32,8 +32,8 @@ TicketFPL is a research-grade pipeline for classifying power distribution event 
 ## Getting Started
 1. **Clone the repository:**
    ```
-   git clone https://github.com/RithikaMathew/ticketFPL.git
-   cd ticketFPL
+   git clone https://github.com/RithikaMathew/ticketModel.git
+   cd ticketModel
    ```
 2. **Set up environment:**
    - Use Conda or Python venv (see below)
